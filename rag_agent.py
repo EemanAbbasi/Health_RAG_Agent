@@ -47,17 +47,18 @@ Answer:
         | StrOutputParser()
     )
 
-    result== chain.invoke(query)
+    response = chain.invoke(query)
 
     # Get source documents separately for citations
     docs = retriever.invoke(query)
-    citations = "\n\n**References:**\n"
+    citations = "\n\n**Key References (from RCT abstracts):**\n"
     seen = set()
-    for doc in result["source_documents"][:4]:
-        title = doc.metadata.get("title", "Untitled Study").strip()
-        if title in seen:
+    for doc in docs[:4]:
+        text = doc.page_content.strip()
+        if text in seen:
             continue
-        seen.add(title)
-        citations += f"• {title}\n"
+        seen.add(text)
+        first_sentence = text.split('.')[0] + '.' if '.' in text else text[:120] + "..."
+        citations += f"• {first_sentence}\n"
 
-    return response + citations
+    return response + citation
