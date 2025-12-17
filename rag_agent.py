@@ -60,4 +60,4 @@ Answer:
         seen.add(title)
         citations += f"• {title}\n"
 
-     return response + citations
+    return response + citations
