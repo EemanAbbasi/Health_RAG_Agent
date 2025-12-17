@@ -51,14 +51,13 @@ Answer:
 
     # Get source documents separately for citations
     docs = retriever.invoke(query)
-    citations = "\n\n**Key References (from RCT abstracts):**\n"
+    citations = "\n\n**References:**\n"
     seen = set()
-    for doc in docs[:4]:
-        text = doc.page_content.strip()
-        if text in seen:
+    for doc in result["source_documents"][:4]:
+        title = doc.metadata.get("title", "Untitled Study").strip()
+        if title in seen:
             continue
-        seen.add(text)
-        first_sentence = text.split('.')[0] + '.' if '.' in text else text[:120] + "..."
-        citations += f"• {first_sentence}\n"
+        seen.add(title)
+        citations += f"• {title}\n"
 
-    return response + citations
+     return response + citations
