@@ -46,7 +46,7 @@ Answer:
         | StrOutputParser()
     )
     
-    response = chain.invoke(query)
+    result = chain.invoke(query)
     
     citations = "\n\n**Key References (from RCT abstracts):**\n"
     seen = set()
