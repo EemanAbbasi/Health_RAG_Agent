@@ -51,14 +51,6 @@ Answer:
 
     # Get source documents separately for citations
     docs = retriever.invoke(query)
-    citations = "\n\n**Key References (from RCT abstracts):**\n"
-    seen = set()
-    for doc in docs[:4]:
-        text = doc.page_content.strip()
-        if text in seen:
-            continue
-        seen.add(text)
-        first_sentence = text.split('.')[0] + '.' if '.' in text else text[:120] + "..."
-        citations += f"• {first_sentence}\n"
+    citations = "\n\n(Note: Suggestions are based on RCT evidence from PubMed abstracts.)"
 
-    return response + citations
+return response + citations
