@@ -48,16 +48,19 @@ Answer:
     
     response = chain.invoke(query)
     
-    # Clean citations
-    citations = "\n\n**References:**\n"
-    docs = retriever.invoke(query)
+    citations = "\n\n**Key References (from RCT abstracts):**\n"
     seen = set()
-    for i, doc in enumerate(docs[:4], 1):
+    for i, doc in enumerate(result["source_documents"][:4], 1):
         text = doc.page_content.strip()
         if text in seen:
             continue
         seen.add(text)
-        first_sentence = text.split('.')[0] + '.' if '.' in text else text[:120] + "..."
+        # Clean first sentence
+        first_sentence = text.split('.')[0]
+        if first_sentence:
+            first_sentence += '.'  # Add period back
+        else:
+            first_sentence = text[:120] + "..."
         citations += f"• {first_sentence}\n"
     
     return response + citations
