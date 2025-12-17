@@ -53,4 +53,4 @@ Answer:
     docs = retriever.invoke(query)
     citations = "\n\n(Note: Suggestions are based on RCT evidence from PubMed abstracts.)"
 
-      return response + citations
+    return response + citations
