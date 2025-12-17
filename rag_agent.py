@@ -62,5 +62,5 @@ Answer:
         else:
             first_sentence = text[:120] + "..."
         citations += f"• {first_sentence}\n"
-    
-    return response + citations
+
+return response + citations
