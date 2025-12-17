@@ -4,9 +4,10 @@ import pandas as pd
 def load_pubmed_20k_rct():
     data_dir = "pubmed-rct/PubMed_20k_RCT"
     
-    splits = ["dev", "test", "train"]  # Start with ["dev"] for fast test
+    splits = ["dev", "test", "train"]  # Use ["dev"] for quick test
     
-    all_texts = []
+    titles = []
+    abstracts = []
     
     for split in splits:
         path = os.path.join(data_dir, f"{split}.txt")
@@ -16,26 +17,36 @@ def load_pubmed_20k_rct():
         
         print(f"Loading {split}.txt...")
         with open(path, "r", encoding="utf-8") as f:
-            content = f.read()
+            lines = f.readlines()
         
-        # Split by paper (###ID)
-        papers = content.split("###")[1:]  # Skip first empty
+        current_title = ""
+        current_abstract = ""
+        for line in lines:
+            line = line.strip()
+            if line.startswith("###"):
+                if current_title:
+                    titles.append(current_title.strip())
+                    abstracts.append(current_abstract.strip())
+                current_title = ""
+                current_abstract = ""
+            elif "\t" in line:
+                role, text = line.split("\t", 1)
+                text = text.strip()
+                if role == "title":
+                    current_title = text
+                else:
+                    current_abstract += text + " "
         
-        for paper in papers:
-            lines = paper.strip().split("\n")
-            if not lines:
-                continue
-            # First line after ### is usually ID, skip it
-            text_lines = lines[1:]
-            full_text = " ".join(line.strip() for line in text_lines if "\t" in line or line.strip())
-            if full_text:
-                all_texts.append(full_text)
+        if current_title:
+            titles.append(current_title.strip())
+            abstracts.append(current_abstract.strip())
     
-    if not all_texts:
-        raise ValueError("No text parsed — files may be empty or format different.")
+    if not titles:
+        raise ValueError("No titles parsed — check file paths.")
     
     df = pd.DataFrame({
-        "abstract": all_texts
+        "title": titles,
+        "abstract": abstracts
     })
     
     print(f"Total abstracts loaded: {len(df)}")
@@ -47,13 +58,13 @@ def load_pubmed_20k_rct():
     filtered_df = df[mask].copy()
     
     if len(filtered_df) == 0:
-        print("No matches — saving first 500 abstracts for testing.")
-        filtered_df = df.head(500)
+        print("No matches — saving all for testing.")
+        filtered_df = df
     
     filtered_df.to_csv("microbiome_abstracts.csv", index=False)
-    print(f"Saved {len(filtered_df)} abstracts!")
+    print(f"Saved {len(filtered_df)} abstracts with titles!")
     print("\nSample:")
-    print(filtered_df['abstract'].head(2))
+    print(filtered_df[['title', 'abstract']].head(2))
     
     return filtered_df
 
