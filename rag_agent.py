@@ -61,4 +61,4 @@ Answer:
         first_sentence = text.split('.')[0] + '.' if '.' in text else text[:120] + "..."
         citations += f"• {first_sentence}\n"
 
-    return response + citation
+    return response + citations
