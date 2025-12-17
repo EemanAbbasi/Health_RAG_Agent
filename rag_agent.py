@@ -47,7 +47,7 @@ Answer:
         | StrOutputParser()
     )
 
-    response = chain.invoke(query)
+    result== chain.invoke(query)
 
     # Get source documents separately for citations
     docs = retriever.invoke(query)
